@@ -8,6 +8,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
+// BaseControllerを継承
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }
