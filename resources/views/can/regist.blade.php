@@ -1,8 +1,5 @@
-@extends('layouts.app')
 
-@section('title', '新規登録')
-
-@section('content')
+@include('layouts.header')
    
 <div class="container">
     <div class="row">
@@ -57,6 +54,7 @@
                 <input id="comment" type="text" name="comment" placeholder="例:120" value="{{ old('comment') }}">
                 @if($errors->has('comment'))
                     <p>{{ $errors->first('comment') }}</p>
+                    {{ console.log($errors->first('comment')) }}
                 @endif
             </div>
 
@@ -71,4 +69,3 @@
     <a href="{{ route('show.list') }}">戻る</a>         
     </div>
 </div>
-@endsection

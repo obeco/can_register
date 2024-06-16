@@ -1,4 +1,6 @@
-    <h1>商品一覧画面</h1>
+@include('layouts.header')
+<!-- TODO：headerから変数でtitle入れる -->
+   <h1>商品一覧画面</h1>
 
     <!-- 新規登録画面へ -->
     <a href="{{ route('show.regist') }}" class="btn btn-primary mb-3">商品新規登録</a>
@@ -62,3 +64,5 @@
     {{ $products->links() }}
     </div>
 
+    </body>
+    </html>

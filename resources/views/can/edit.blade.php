@@ -11,6 +11,9 @@
         <div>
             <label for="product_name">商品名</label>
             <input type="text" name="product_name" id="product_name" value="{{ $product->product_name }}">
+            @if($errors->has('product_name'))
+                <p>{{ $errors->first('product_name') }}</p>
+            @endif
         </div>
 
         <div>
@@ -18,9 +21,9 @@
             <select name="company" data-toggle="select">
                 <option value="">メーカー名</option>
                 @foreach($companies as $company)
-                    <option value="{{ $company->id }}">
-                        <!-- もともとdetailで選択されていたメーカー名が選択された状態にしたい 未完了 -->
-                        {{ $company->company_name }}
+                    <option value="{{ $company->id }}" {{ old('id', $product->company_id) == $company->id ? 'selected' : '' }}>
+                        <!-- 三項演算子　 -->
+                    {{ $company->company_name }}
                     </option>
                 @endforeach
             </select>

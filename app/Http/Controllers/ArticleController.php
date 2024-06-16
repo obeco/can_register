@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Requests\Request;
-use App\Models\Company;
 use Illuminate\Support\Facades\DB;
+use App\Models\Product;
+use App\Models\Company;
 use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller {
 
+
     // 新規商品登録
     public function storeProduct(ArticleRequest $request){
-                
-        //①画像ファイルの取得
+
+        // 画像ファイルの取得
         $image = $request->file('image');
 
         if($request->hasFile('image')){
-            //②画像ファイルのファイル名を取得
+            // 画像ファイルのファイル名を取得
             $file_name = $image->getClientOriginalName();
-            //③storage/app/public/imagesフォルダ内に、取得したファイル名で保存
+            // storage/app/public/imagesフォルダ内に、取得したファイル名で保存
             $image->storeAs('public/images', $file_name);
-            //④データベース登録用に、ファイルパスを作成
+            // データベース登録用に、ファイルパスを作成
             $img_path = 'storage/images/'.$file_name;
 
         } else {
@@ -30,7 +31,7 @@ class ArticleController extends Controller {
         }
 
         // プルダウンリストからメーカー名を選択登録する
-        $company_id = $request->input(['company']); // 選択したメーカー名のcompany_idを取得
+        $company_id = $request->input(['company']); // 選択したメーカー名のidを取得
         $products = Product::query(); // productsテーブルの情報を取得
 
         foreach($products as $query){
@@ -40,64 +41,71 @@ class ArticleController extends Controller {
         $company_selected = Company::find($company_id); // companyテーブルから選択したリストのidに該当する情報を取得
         $company_name = $company_selected->company_name; // 上記からcompany_nameを取得
         
-        Product::create([
-            'product_name' => $request->product_name,
-            'company_name' => $company_name,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'comment' => $request->comment,
-            'img_path' => $img_path,
-            'company_id' => $company_id
+        // トランザクション開始
+        DB::beginTransaction();
+        try {
+            Product::create([
+                'product_name' => $request->product_name,
+                'company_name' => $company_name,
+                'price' => $request->price,
+                'stock' => $request->stock,
+                'comment' => $request->comment,
+                'img_path' => $img_path,
+                'company_id' => $company_id
             ]);
-
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            echo $e->getMessage();
+            // TODO：エラーメッセージを表示させたい
+            return back();
+        }
     return to_route('show.list', compact('products'));
     }
+
     
-
+    // 更新登録
     public function updateProduct(ArticleRequest $request, $id){
-
         if($request){
             $company_id = $request->input(['company']);
         }
-        // 選択したcompany_nameの取得
-        $company_selected = Company::find($company_id);
-        $company_name = $company_selected->company_name;
+        $company = Company::find($company_id);
+        $company_name = $company->company_name;
 
-        //①画像ファイルの取得
+        // 画像ファイルの取得
         $image = $request->file('image');
         
-        $product = Product::find($id);
-        $product->product_name = $request->product_name;
-        $product->company_name = $company_name;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
-        $product->comment = $request->comment;
-
         if($request->hasFile('image')){
-            //②画像ファイルのファイル名を取得
+            // 画像ファイルのファイル名を取得
             $file_name = $image->getClientOriginalName();
-            //③storage/app/public/imagesフォルダ内に、取得したファイル名で保存
+            // storage/app/public/imagesフォルダ内に、取得したファイル名で保存
             $image->storeAs('public/images', $file_name);
-            //④データベース登録用に、ファイルパスを作成
+            // データベース登録用に、ファイルパスを作成
             $img_path = 'storage/images/' . $file_name;
-            // productテーブルにファイルパスを保存
+        }
+
+        // トランザクション開始
+        DB::beginTransaction();
+        try {
+            $product = Product::find($id);   
+            $product->company_id = $company_id;
+            $product->product_name = $request->product_name;
+            $product->company_name = $company_name;
+            $product->price = $request->price;
+            $product->stock = $request->stock;
+            $product->comment = $request->comment;
             $product->img_path = $img_path;
+            $product->save();
+ 
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            echo $e->getMessage();
+            // TODO：エラーメッセージを表示させたい
+            return back();
         }
+        $products = Product::all();
 
-        // プルダウンリストで選択したメーカー名のidをcompanyに入れる
-        $company = $request->input('company');
-        // productテーブルから情報を取得
-        $query = Product::query();
-
-        // productsテーブルのcompany_idから、選択したメーカー名のidを検索
-        if($company){
-            $query->where('company_id',$company);
-        }
-
-        $products = $query->get();
-            
-        $product->save();
-    
         return to_route('show.list',compact('products'));
     }
     
@@ -125,7 +133,6 @@ class ArticleController extends Controller {
 
         }
         }
-
         if($company){
             $query->where('company_id',$company);
         }
@@ -158,13 +165,20 @@ class ArticleController extends Controller {
         return view('can.edit', compact('product','companies'));
     }
 
-    
-
+    // 行削除機能
     public function deleteProduct($id)
     {
-        $product = Product::find($id);
-        $product->delete();
-        // 全ての処理が終わったら、商品一覧画面に戻る
+        DB::beginTransaction();
+        try {    
+            $product = Product::find($id);
+            $product->delete();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            // TODO：エラーメッセージを表示させたい
+            return back();
+        }    
         return redirect()->route('show.list');
     }
 

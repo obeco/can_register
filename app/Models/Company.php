@@ -34,7 +34,7 @@ class Company extends Model
     // Companyモデルがproductsテーブルとリレーション関係を結ぶためのメソッド
     public function products()
     {
-        return $this->hasMany(Product::class, 'company_name');
+        return $this->hasMany(Product::class, 'company_id');
     }
 
 }

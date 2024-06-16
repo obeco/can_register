@@ -19,6 +19,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',
@@ -43,10 +44,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // public function getList() {
-        // usersテーブルからデータを取得
-    //     $users = DB::table('users')->get();
-
-    //     return $users;
-    // }
 }

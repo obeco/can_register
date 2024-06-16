@@ -24,23 +24,11 @@ class Product extends Model
         return $products;
     }
 
-    // 情報登録用関数
-    public function registArticle($data){
-        // 登録処理
-        DB::table('products')->insert([
-            'product_name' => $data->product_name,
-            'company_name' => $data->company_name,
-            'price' => $data->price,
-            'stock' => $data->stock,
-            'comment' => $data->comment,
-            'img_path' => $data->img_path,
-            'company_id' => $data->company_name
-        ]);
-    }
+    
 
-    public function company()
+    public function companies()
     {
-        return $this->belongsTo(Company::class, 'company_name');
+        return $this->belongsTo(Company::class, 'id');
     }
 
 }
