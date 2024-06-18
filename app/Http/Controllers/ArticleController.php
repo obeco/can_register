@@ -72,16 +72,20 @@ class ArticleController extends Controller {
 
         // 画像ファイルの取得
         $image = $request->file('image');
-        
+
         // TODO：詳細画面 → 編集画面へ遷移後、元々のimageが選択されている状態にしたい
-        
-        // 画像ファイルのファイル名を取得
-        $file_name = $image->getClientOriginalName();
-        // storage/app/public/imagesフォルダ内に、取得したファイル名で保存
-        $image->storeAs('public/images', $file_name);
-        // データベース登録用に、ファイルパスを作成
-        $img_path = 'storage/images/' . $file_name;
-        
+
+        if($request->hasFile('image')){
+            // 画像ファイルのファイル名を取得
+            $file_name = $image->getClientOriginalName();
+            // storage/app/public/imagesフォルダ内に、取得したファイル名で保存
+            $image->storeAs('public/images', $file_name);
+            // データベース登録用に、ファイルパスを作成
+            $img_path = 'storage/images/'.$file_name;
+
+        } else {
+            $img_path = null;
+        }
 
         // トランザクション開始
         DB::beginTransaction();
