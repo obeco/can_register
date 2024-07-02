@@ -14,11 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            
-            $table->bigInteger('company_id')->nullable()->unsigned();
-            // unsignedを書くとforeign IDを追加できた
-            $table->foreign('company_id')->references('id')->on('companies');
-            
+            // company_idカラムにNULLを許容
+            $table->text('company_id')->nullable()->change();
         });
     }
 
@@ -30,7 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            //
+            // company_idカラムにNULLを許容しない
+            $table->text('company_id')->nullable(false)->change();
         });
     }
 };

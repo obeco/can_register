@@ -25,6 +25,7 @@ class ArticleRequest extends FormRequest
         return [
             'product_name' => 'max:255',
             'company_name' => 'max:255',
+            'company_id' => 'max:200',
             'price' => 'max:10000',
             'stock' => 'max:500',
             'comment' => 'max:10000',

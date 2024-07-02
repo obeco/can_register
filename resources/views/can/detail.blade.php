@@ -1,3 +1,6 @@
+@extends('layouts.app')
+
+@section('content')
 <div class="links">
     <h1>詳細画面</h1>
     <table>
@@ -17,10 +20,10 @@
                 <td>{{ $product->id }}</td>
                 <td><img src="{{ asset($product->img_path) }}" alt="商品画像" width="100"></td>
                 <td>{{ $product->product_name }}</td>
-                <td>{{ $product->company_name }}</td>
                 <td>{{ $product->price }}</td>
                 <td>{{ $product->stock }}</td>
                 <td>{{ $product->comment }}</td>
+                <td>{{ $product->companies->company_name }}</td>
                 <td>
                     <!-- 選択したカラム行の情報を持って、編集画面へ -->
                     <a href="{{ route('show.edit', ['id' => $product->id]) }}">商品編集</a>
@@ -32,3 +35,4 @@
         </tbody>
     </table>
 </div>
+@endsection

@@ -11,6 +11,8 @@ class Company extends Model
 {
     use HasFactory;
 
+    protected $table = 'companies';
+
     protected $fillable = [
         'company_name'
     ];
@@ -34,7 +36,7 @@ class Company extends Model
     // Companyモデルがproductsテーブルとリレーション関係を結ぶためのメソッド
     public function products()
     {
-        return $this->hasMany(Product::class, 'company_id');
+        return $this->hasMany(Product::class,'id','company_id');
     }
 
 }

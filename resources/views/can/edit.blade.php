@@ -1,5 +1,7 @@
 
+@extends('layouts.app')
 
+@section('content')
 <div class="form-group row">
     <form method="post" action="{{ route('update.product', ['id' => $product->id ]) }}" enctype="multipart/form-data">        
     @csrf
@@ -8,12 +10,14 @@
             <p>"{{ $product->id }}"</p>
         </div>
 
+        <!-- メッセージ表示 -->
+        @if(session('message'))
+            <x-message :message="session('message')" />
+        @endif
+
         <div>
             <label for="product_name">商品名</label>
             <input type="text" name="product_name" id="product_name" value="{{ $product->product_name }}">
-            @if($errors->has('product_name'))
-                <p>{{ $errors->first('product_name') }}</p>
-            @endif
         </div>
 
         <div>
@@ -32,6 +36,7 @@
         <div>
             <label for="price">価格</label>
             <input type="text" name="price" id="price" value="{{ $product->price }}">
+
         </div>
 
         <div>
@@ -42,6 +47,7 @@
         <div>
             <label for="comment">コメント</label>
             <input type="text" name="comment" id="comment" value="{{ $product->comment }}">
+            
         </div>
 
         <div>
@@ -53,9 +59,11 @@
             <p>画像なし</p>
             @endif
             <input id="image" type="file" name="image" class="form-control">
+            <p class="text-danger">画像がある場合は、もう一度選択してください。</p>
         </div>
 
         <button type="submit">更新する</button>
     </form>
     <a href="{{ route('show.list') }}">戻る</a>
 </div>
+@endsection

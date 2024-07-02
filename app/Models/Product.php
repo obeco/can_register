@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\DB;
 class Product extends Model
 {
     use HasFactory;
+
+    protected $table = 'products';
+
     protected $fillable = [
         'product_name',
-        'company_name',
         'price',
         'stock',
         'comment',
@@ -18,7 +20,7 @@ class Product extends Model
         'company_id'
     ];
  
-    public function getProducts() {
+    public function products() {
         // productsテーブルからデータを取得
         $products = DB::table('products')->get();
         return $products;
@@ -28,7 +30,7 @@ class Product extends Model
 
     public function companies()
     {
-        return $this->belongsTo(Company::class, 'id');
+        return $this->belongsTo(Company::class,'company_id','id');
     }
 
 }
