@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="form-group row">
-    <form method="post" action="{{ route('update.product', ['id' => $product->id ]) }}" enctype="multipart/form-data">        
+    <form method="post" action="{{ route('update.product', ['id' => $product->id ]) }}" enctype="multipart/form-data">
     @csrf
         <div>
             <label for="ID">ID</label>
@@ -18,6 +18,9 @@
         <div>
             <label for="product_name">商品名</label>
             <input type="text" name="product_name" id="product_name" value="{{ $product->product_name }}">
+            @if($errors->has('product_name'))
+                <p>{{ $errors->first('product_name') }}</p>
+            @endif
         </div>
 
         <div>
@@ -31,23 +34,33 @@
                     </option>
                 @endforeach
             </select>
+            @if($errors->has('company'))
+                <p>{{ $errors->first('company_name') }}</p>
+            @endif
         </div>
 
         <div>
             <label for="price">価格</label>
             <input type="text" name="price" id="price" value="{{ $product->price }}">
-
+            @if($errors->has('price'))
+                <p>{{ $errors->first('price') }}</p>
+            @endif
         </div>
 
         <div>
             <label for="stock">在庫数</label>
             <input type="text" name="stock" id="stock" value="{{ $product->stock }}">
+            @if($errors->has('stock'))
+                <p>{{ $errors->first('stock') }}</p>
+            @endif
         </div>
 
         <div>
             <label for="comment">コメント</label>
             <input type="text" name="comment" id="comment" value="{{ $product->comment }}">
-            
+            @if($errors->has('comment'))
+                <p>{{ $errors->first('comment') }}</p>
+            @endif
         </div>
 
         <div>

@@ -22,14 +22,14 @@ class ArticleRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
-            'product_name' => 'max:255',
-            'company_name' => 'max:255',
-            'company_id' => 'max:200',
-            'price' => 'max:10000',
-            'stock' => 'max:500',
-            'comment' => 'max:10000',
-            'img_path' => 'width:200'
+            'product_name' => 'required|max:255',
+            'company' => 'required|max:200',
+            'price' => 'required|max:500',
+            'stock' => 'required|max:500',
+            'comment' => 'max:1000',
+            'image' => 'max:1000'
         ];
     }
         /**
@@ -41,12 +41,11 @@ class ArticleRequest extends FormRequest
     {
         return [
             'product_name' => '商品名',
-            'company_id' => 'メーカー番号',
-            'company_name' => 'メーカー名',
+            'company' => 'メーカー番号',
             'price' => '価格',
             'stock' => '数量',
             'comment' => 'コメント',
-            'img_path' => '商品画像'
+            'image' => '商品画像'
         ];
     }
     /**
@@ -57,15 +56,14 @@ class ArticleRequest extends FormRequest
     public function messages() {
         return [
             'product_name.required' => ':attributeは必須項目です。',
-            'product_name.max' => ':attributeは:max字以内で入力してください。',    
-            'company_name.required' => ':attributeは必須項目です。',
-            'company_name.max' => ':attributeは:max字以内で入力してください。',
+            'product_name.max' => ':attributeは:max字以内で入力してください。',
+            'company.required' => ':attributeは必須項目です。',
             'price.required' => ':attributeは必須項目です。',
-            'price.max' => ':attributeは:max字以内で入力してください。',
+            'price.max' => ':attributeは:max円以内で入力してください。',
             'stock.required' => ':attributeは必須項目です。',
-            'stock.max' => ':attributeは:max字以内で入力してください。',
+            'stock.max' => ':attributeは:max個以内で入力してください。',
             'comment.max' => ':attributeは:max字以内で入力してください。',
-            'img_path.max' => ':attributeは:max字以内で入力してください。'
+            'image.max' => ':attributeは:max字以内で入力してください。'
         ];
     }
 }

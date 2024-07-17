@@ -133,20 +133,20 @@ return [
     */
 
     'product_name.required' => ':attributeは必須項目です。',
-    'product_name.max' => ':attributeは:max字以内で入力してください。',
-    'company_id.required' => ':attributeは必須項目です。',   
-    'company_name.required' => ':attributeは必須項目です。',
-    'company_name.max' => ':attributeは:max字以内で入力してください。',
-    'price.required' => ':attributeは必須項目です。',
-    'price.max' => ':attributeは:max字以内で入力してください。',
-    'stock.required' => ':attributeは必須項目です。',
-    'stock.max' => ':attributeは:max字以内で入力してください。',
-    'comment.max' => ':attributeは:max字以内で入力してください。',
-    'img_path.max' => ':attributeは:max字以内で入力してください。',
+            'product_name.max' => ':attributeは:max字以内で入力してください。',
+            'company_name.required' => ':attributeは必須項目です。',
+            'company_name.max' => ':attributeは:max字以内で入力してください。',
+            'company.required' => ':attributeは必須項目です。',
+            'price.required' => ':attributeは必須項目です。',
+            'price.max' => ':attributeは:max円以内で入力してください。',
+            'stock.required' => ':attributeは必須項目です。',
+            'stock.max' => ':attributeは:max個以内で入力してください。',
+            'comment.max' => ':attributeは:max字以内で入力してください。',
+            'img_path.max' => ':attributeは:max字以内で入力してください。',
     
     'custom' => [
         'attribute-name' => [
-            'rule-name' => 'custom-message',
+            'rule-name' => 'custom-message'
         ],
     ],
 
@@ -163,7 +163,7 @@ return [
 
     'attributes' => [
         'product_name' => '商品名',
-        'company_id' => 'メーカー名',
+        'company' => 'メーカー名',
         'company_name' => 'メーカー名',
         'price' => '価格',
         'stock' => '数量',

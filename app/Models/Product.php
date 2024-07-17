@@ -19,19 +19,24 @@ class Product extends Model
         'img_path',
         'company_id'
     ];
- 
+
     public function products() {
         // productsテーブルからデータを取得
         $products = DB::table('products')->get();
         return $products;
     }
 
-    
+
 
     public function companies()
     {
         return $this->belongsTo(Company::class,'company_id','id');
     }
 
+    public function sales()
+    {
+        return $this->hasMany(Sale::class,'id','product_id');
+    }
+
 }
-    
+

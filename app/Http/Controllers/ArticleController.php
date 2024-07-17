@@ -32,7 +32,7 @@ class ArticleController extends Controller {
         }
 
         // プルダウンリストからメーカー名を選択登録する
-        $company_id = $request->input(['company']); // 選択したメーカー名のidを取得
+        $company_id = $request->input(['company']);
 
         $products = Product::query(); // productsテーブルの情報を取得
 
@@ -44,7 +44,7 @@ class ArticleController extends Controller {
         DB::beginTransaction();
         try {
             Product::create([
-                'company_id' => $company_id,
+                'company_id' => $request->company,
                 'product_name' => $request->product_name,
                 'price' => $request->price,
                 'stock' => $request->stock,
@@ -54,6 +54,7 @@ class ArticleController extends Controller {
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
+            \Log::error($e);
             return back()->with('message', '情報が正しく入力されませんでした');
             }
 
@@ -65,7 +66,7 @@ class ArticleController extends Controller {
     public function updateProduct(ArticleRequest $request){
 
         $id = $request->id;
-        $product = Product::find($id); 
+        $product = Product::find($id);
 
         // 画像ファイルの取得
         $image = $request->file('image');
@@ -100,6 +101,7 @@ class ArticleController extends Controller {
             DB::rollback();
             return back()->with('message', '情報が正しく入力されませんでした');
         }
+
         $products = Product::all();
 
         return to_route('show.list',compact('products'))->with('message', '更新登録が完了しました。');
@@ -111,13 +113,7 @@ class ArticleController extends Controller {
 
         $product = Product::query(); // productテーブルの情報取得
 
-        // ◆メーカー名リストの実装
-        $company_id = $request->input('company'); // プルダウンで選択したメーカーidをcompany_idに入れる
-        if($company_id){
-            $product->where('company_id',$company_id)->get();
-        }
-
-        // ◆検索フォームの実装
+        // 検索フォームの実装
         // ユーザーが入れたキーワードをkeywordに入れる
         $keyword = $request->keyword;
         if($keyword){
@@ -129,6 +125,37 @@ class ArticleController extends Controller {
             // 上記の配列をforeachで回す
             $product->where('product_name','LIKE','%'.$keyword. '%')->get();
         }
+        }
+
+        // 商品名の検索キーワードがある場合、そのキーワードを含む商品を表示
+        if($keyword = $request->keyword){
+            $product->where('product_name', 'LIKE', "%{$keyword}%");
+        }
+
+        // 最小価格が指定されている場合、その価格以上の商品を表示
+        if($min_price = $request->min_price){
+            $product->where('price', '>=', $min_price);
+        }
+
+        // 最大価格が指定されている場合、その価格以下の商品を表示
+        if($max_price = $request->max_price){
+            $product->where('price', '<=', $max_price);
+        }
+
+        // 最小在庫数が指定されている場合、その在庫数以上の商品を表示
+        if($min_stock = $request->min_stock){
+            $product->where('stock', '>=', $min_stock);
+        }
+
+        // 最大在庫数が指定されている場合、その在庫数以下の商品を表示
+        if($max_stock = $request->max_stock){
+            $product->where('stock', '<=', $max_stock);
+        }
+
+        // ソートのパラメータが指定されている場合、そのカラムでソートを行う
+        if($sort = $request->sort){
+            $direction = $request->direction == 'desc' ? 'desc' : 'asc'; // directionがdescでない場合は、デフォルトでascとする
+            $product->orderBy($sort, $direction);
         }
         
         // ページネーション
@@ -149,9 +176,7 @@ class ArticleController extends Controller {
 
     // 詳細画面表示
     public function showDetail($id){
-
         $product = Product::find($id);
-        
         return view('can.detail', compact('product'));
     }
 
@@ -162,20 +187,11 @@ class ArticleController extends Controller {
         return view('can.edit', compact('product','companies'));
     }
 
-    // 行削除機能
-    public function deleteProduct($id)
-    {
-        DB::beginTransaction();
-        try {    
-            $product = Product::find($id);
-            $product->delete();
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            return back()->with('messages', $e);
-        }    
-        return redirect()->route('show.list')->with('message', '削除しました。');
+    // Ajax行削除機能
+    public function destroyProduct ($id) {
+        \Log::info($id);
+        $product = Product::findOrFail($id);
+        $product->delete();
     }
 
 }
