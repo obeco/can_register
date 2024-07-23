@@ -57,9 +57,8 @@ class ArticleController extends Controller {
             \Log::error($e);
             return back()->with('message', '情報が正しく入力されませんでした');
             }
-
-    return to_route('show.list', compact('products'))->with('message', '新規商品情報を登録しました。');
-    }
+            return to_route('show.list', compact('products'))->with('message', '新規商品情報を登録しました。');
+        }
 
     
     // 更新登録
@@ -95,7 +94,7 @@ class ArticleController extends Controller {
             $product->comment = $request->comment;
             $product->img_path = $img_path;
             $product->save();
- 
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -111,10 +110,11 @@ class ArticleController extends Controller {
     // 一覧表示関数
     public function showList(Request $request){
 
-        $product = Product::query(); // productテーブルの情報取得
+        // productテーブルの情報取得
+        $product = Product::query();
 
         // 検索フォームの実装
-        // ユーザーが入れたキーワードをkeywordに入れる
+        // keyword＝ユーザーが入力したキーワード
         $keyword = $request->keyword;
         if($keyword){
             $split1 = mb_convert_kana($keyword, 's');
@@ -157,7 +157,6 @@ class ArticleController extends Controller {
             $direction = $request->direction == 'desc' ? 'desc' : 'asc'; // directionがdescでない場合は、デフォルトでascとする
             $product->orderBy($sort, $direction);
         }
-        
         // ページネーション
         $products = $product->paginate(5);
 
@@ -167,18 +166,20 @@ class ArticleController extends Controller {
         return view ('can.list', compact('products','companies'));
     }
 
-  
+
     // 登録画面表示
     public function showRegist(){
         $companies = Company::all();
         return view('can.regist',compact('companies'));
     }
 
+
     // 詳細画面表示
     public function showDetail($id){
         $product = Product::find($id);
         return view('can.detail', compact('product'));
     }
+
 
     // 編集画面表示
     public function showEdit($id){
@@ -193,9 +194,6 @@ class ArticleController extends Controller {
         $product = Product::findOrFail($id);
         $product->delete();
     }
-
 }
-
-
 
 ?>

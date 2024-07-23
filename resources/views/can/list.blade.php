@@ -1,13 +1,32 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <script>
+
+    $(document).ready(function() {
+            $('#fav-table').tablesorter({})
+            
+        });
+
+        $('#fav-table')
+            .tablesorterPager({
+                container: $(".pager"),
+                // 表示したい行数
+                size: 5
+            });
+
+
+    </script>
+    
+
    <h1>商品一覧画面</h1>
 
     <!-- 新規登録画面へ -->
     <a href="{{ route('show.regist') }}" class="btn btn-primary mb-3">商品新規登録</a>
    
     <!-- キーワード検索フォーム -->
-    <form action="{{ route('show.list') }}" method="GET">
+    <form action="{{ route('show.list') }}" method="GET" class="mb-3">
     @csrf
         <!-- 商品名検索用の入力欄 -->
         <label class="col-sm-12 col-md-3">
@@ -49,28 +68,21 @@
         </div>
     </form>
 
-        <!-- メッセージ表示 -->
-        @if(session('message'))
-            <x-message :message="session('message')" />
-        @endif
+    <!-- メッセージ表示 -->
+    @if(session('message'))
+        <x-message :message="session('message')" />
+    @endif
 
+    <!-- テーブル -->
     <div>
-        <table class="table">
+        <table id="fav-table" class="table pager-table">
             <thead class="table-primary">
                 <tr>
                     <th>ID</th>
                     <th>商品画像</th>
                     <th>商品名</th>
-                    <th>
-                        価格
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'price', 'direction' => 'asc']) }}">↑</a>
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'price', 'direction' => 'desc']) }}">↓</a>
-                    </th>
-                    <th>
-                        在庫数
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'stock', 'direction' => 'asc']) }}">↑</a>
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'stock', 'direction' => 'desc']) }}">↓</a>
-                    </th>
+                    <th>価格</th>
+                    <th>在庫数</th>
                     <th>コメント</th>
                     <th>メーカー名</th>
                 </tr>
@@ -95,10 +107,25 @@
                 @endforeach
             </tbody>
         </table>
-    <!-- ページネーション -->
-    {{ $products->appends(request()->query())->links() }}
-    </div>
+        
+        <!-- ページネーション -->
+        <div class="pager">
+            <button type='button' class='first'>&lt;&lt;</button>
+            <button type='button' class='prev'>&lt;</button>
 
+            <span class="pagedisplay" value=""/>
+            <input type="text" class="pagedisplay"/>
+
+            <button type='button' class='next'>&gt;</button>
+            <button type='button' class='last'>&gt;&gt;</button>
+
+            <select class="pagesize">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+            </select>
+        </div>
+    </div>
 
     <script type="text/javascript">
         // トークンを送信する記述
@@ -110,6 +137,7 @@
             }
         });
 
+        // 削除機能の実装
         $(function(){
             $('.btn-danger').on('click', function(){
                 var deleteConfirm = confirm('本当に削除しますか？');
@@ -137,6 +165,9 @@
                 };
             });
         });
+
+        
+
     </script>
 
     @endsection
