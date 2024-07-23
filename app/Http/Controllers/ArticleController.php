@@ -154,11 +154,14 @@ class ArticleController extends Controller {
 
         // ソートのパラメータが指定されている場合、そのカラムでソートを行う
         if($sort = $request->sort){
-            $direction = $request->direction == 'desc' ? 'desc' : 'asc'; // directionがdescでない場合は、デフォルトでascとする
+            // directionがdescでない場合は、デフォルトでascとする
+            $direction = $request->direction == 'desc' ? 'desc' : 'asc';
+            // 第一引数で基準、第二引数で昇順か降順
             $product->orderBy($sort, $direction);
         }
-        // ページネーション
-        $products = $product->paginate(5);
+        
+        // 絞り込んだデータをproductsに入れる
+        $products = $product->get();
 
         // メーカー名プルダウン用
         $companies = Company::all();

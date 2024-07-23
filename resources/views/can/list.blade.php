@@ -3,18 +3,24 @@
 @section('content')
 
     <script>
+    // ソートが適用されなかった
+    // $('#fav-table')
+    //     .tablesorter({})
+    //     .tablesorterPager({
+    //         container: $(".pager"),
+    //         size: 5
+    //     });
 
-    $(document).ready(function() {
+        $(document).ready(function() {
             $('#fav-table').tablesorter({})
-            
-        });
-
-        $('#fav-table')
             .tablesorterPager({
                 container: $(".pager"),
                 // 表示したい行数
                 size: 5
             });
+
+        });
+
 
 
     </script>
@@ -74,7 +80,7 @@
     @endif
 
     <!-- テーブル -->
-    <div>
+    
         <table id="fav-table" class="table pager-table">
             <thead class="table-primary">
                 <tr>
@@ -106,26 +112,25 @@
                 </tr>
                 @endforeach
             </tbody>
+
+
         </table>
-        
-        <!-- ページネーション -->
-        <div class="pager">
-            <button type='button' class='first'>&lt;&lt;</button>
-            <button type='button' class='prev'>&lt;</button>
 
-            <span class="pagedisplay" value=""/>
-            <input type="text" class="pagedisplay"/>
-
-            <button type='button' class='next'>&gt;</button>
-            <button type='button' class='last'>&gt;&gt;</button>
-
-            <select class="pagesize">
+        <div id="pager" class="pager">
+            <button type="button" class="first"><<</button>
+            <button type="button" class="prev"><</button>
+            <span class="pagedisplay"></span>
+            <button type="button" class="next">></button>
+            <button type="button" class="last">>></button>
+            <select class="pagesize" title="Select page size">
                 <option value="10">10</option>
                 <option value="20">20</option>
                 <option value="30">30</option>
+                <option value="40">40</option>
             </select>
+            
+            <select class="gotoPage" title="Select page number"></select>
         </div>
-    </div>
 
     <script type="text/javascript">
         // トークンを送信する記述
