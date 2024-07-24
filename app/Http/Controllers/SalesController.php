@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\Sale;
 
@@ -26,19 +27,26 @@ class SalesController extends Controller
         return response()->json(['message' => '商品の在庫が不足しています'], 400);
     }
 
-    // 在庫を減少させる
-    $product->stock -= $quantity;
-    $product->save();
+    // トランザクション開始
+    DB::beginTransaction();
+    try {
+        // 在庫を減少させる
+        $product->stock -= $quantity;
+        $product->save();
 
+        // Salesテーブルに商品IDを保存
+        $sale = new Sale([
+            'product_id' => $product_id
+        ]);
+        $sale->save();
 
-    // Salesテーブルに商品IDを保存
-    $sale = new Sale([
-        'product_id' => $product_id
-    ]);
+        DB::commit();
+        return response()->json(['message' => '商品が購入されました！']);
 
-    $sale->save();
-
-    // レスポンスを返す
-    return response()->json(['message' => '商品が購入されました！']);
+    } catch (\Exception $e) {
+        DB::rollback();
+        return back()->with('message', '商品を購入できませんでした。');
+    }
+    
 }
 }

@@ -131,6 +131,7 @@ class ArticleController extends Controller {
         if($keyword = $request->keyword){
             $product->where('product_name', 'LIKE', "%{$keyword}%");
         }
+        
 
         // 最小価格が指定されている場合、その価格以上の商品を表示
         if($min_price = $request->min_price){
@@ -150,6 +151,11 @@ class ArticleController extends Controller {
         // 最大在庫数が指定されている場合、その在庫数以下の商品を表示
         if($max_stock = $request->max_stock){
             $product->where('stock', '<=', $max_stock);
+        }
+
+        // メーカー名プルダウンの実装
+        if($company_id = $request->input('company')){
+            $product->where('company_id',$company_id)->get();
         }
 
         // ソートのパラメータが指定されている場合、そのカラムでソートを行う
@@ -193,10 +199,20 @@ class ArticleController extends Controller {
 
     // Ajax行削除機能
     public function destroyProduct ($id) {
-        \Log::info($id);
-        $product = Product::findOrFail($id);
-        $product->delete();
+
+        DB::beginTransaction();
+        try {    
+            \Log::info($id);
+            $product = Product::findOrFail($id);
+            $product->delete();
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', $e->getMessage());
+        }    
     }
+
 }
 
 ?>

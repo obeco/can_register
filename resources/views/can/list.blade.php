@@ -3,13 +3,6 @@
 @section('content')
 
     <script>
-    // ソートが適用されなかった
-    // $('#fav-table')
-    //     .tablesorter({})
-    //     .tablesorterPager({
-    //         container: $(".pager"),
-    //         size: 5
-    //     });
 
         $(document).ready(function() {
             $('#fav-table').tablesorter({})
@@ -18,11 +11,7 @@
                 // 表示したい行数
                 size: 5
             });
-
         });
-
-
-
     </script>
     
 
@@ -80,7 +69,6 @@
     @endif
 
     <!-- テーブル -->
-    
         <table id="fav-table" class="table pager-table">
             <thead class="table-primary">
                 <tr>
