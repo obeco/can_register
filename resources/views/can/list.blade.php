@@ -147,14 +147,12 @@
                 let min_stock = $('.min_stock').val(); //最小在庫を取得
                 let max_stock = $('.max_stock').val(); //最大在庫を取得
 
-
-
                 // controllerの処理を呼び出す
                 // 結果をjsonで受け取る
                 $.ajax({
                         type: 'GET',
-                        url: 'search ? keyword=keyword &min_price=min_price &max_price=max_price &min_stock=min_stock &max_stock=max_stock &company=company',
-                        data: {'id':userID,
+                        url: /can/list,
+                        data: {products: ["id","product_name","price","stock","img_path","comment"],
                                 '_method': 'GET'},
                         dataType: 'json'
                         })
