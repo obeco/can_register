@@ -3,7 +3,15 @@
 @section('content')
 
     <script>
+    // ソートが適用されなかった
+    // $('#fav-table')
+    //     .tablesorter({})
+    //     .tablesorterPager({
+    //         container: $(".pager"),
+    //         size: 5
+    //     });
 
+        // 並べ替え機能
         $(document).ready(function() {
             $('#fav-table').tablesorter({})
             .tablesorterPager({
@@ -25,27 +33,27 @@
     @csrf
         <!-- 商品名検索用の入力欄 -->
         <label class="col-sm-12 col-md-3">
-            <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="商品名検索">
+            <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="商品名検索" class="keyword">
         </label>
 
         <!-- 最小価格の入力欄 -->
         <label class="col-sm-12 col-md-2">
-            <input type="number" name="min_price" class="form-control" placeholder="最小価格" value="{{ request('min_price') }}">
+            <input type="number" name="min_price" class="min_price form-control" placeholder="最小価格" value="{{ request('min_price') }}">
         </label>
 
         <!-- 最大価格の入力欄 -->
         <label class="col-sm-12 col-md-2">
-            <input type="number" name="max_price" class="form-control" placeholder="最大価格" value="{{ request('max_price') }}">
+            <input type="number" name="max_price" class="max_price form-control" placeholder="最大価格" value="{{ request('max_price') }}">
         </label>
 
         <!-- 最小在庫数の入力欄 -->
         <label class="col-sm-12 col-md-2">
-            <input type="number" name="min_stock" class="form-control" placeholder="最小在庫" value="{{ request('min_stock') }}">
+            <input type="number" name="min_stock" class="min_stock form-control" placeholder="最小在庫" value="{{ request('min_stock') }}">
         </label>
 
         <!-- 最大在庫数の入力欄 -->
         <label class="col-sm-12 col-md-2">
-            <input type="number" name="max_stock" class="form-control" placeholder="最大在庫" value="{{ request('max_stock') }}">
+            <input type="number" name="max_stock" class="max_stock form-control" placeholder="最大在庫" value="{{ request('max_stock') }}">
         </label>
 
 
@@ -54,12 +62,13 @@
             <select name="company" data-toggle="select">
                 <option value="">メーカー名</option>
                 @foreach($companies as $company)
-                    <option value="{{ $company->id }}">
+                    <option value="{{ $company->id }}" class="company">
                         {{ $company->company_name }}
                     </option>
                 @endforeach
             </select>
-            <button>検索する</button>
+
+            <button class="search-button">検索する</button>
         </div>
     </form>
 
@@ -100,8 +109,6 @@
                 </tr>
                 @endforeach
             </tbody>
-
-
         </table>
 
         <div id="pager" class="pager">
@@ -123,11 +130,63 @@
     <script type="text/javascript">
         // トークンを送信する記述
         // Laravelでは通信をする際にトークンを送らなければ仕様でエラーが発生する
-        // サーバーに繰り返し実行する前に、パラメータのデフォルトを設定
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
+        });
+
+        $(function(){
+            $('.search-button').on('click', function(){
+                $('tbody').empty(); //もともとある要素を空にする
+
+                let keyword = $('.keyword').val(); //商品名を取得
+                let company = $('.company').val(); //メーカー名を取得
+                let min_price = $('.min_price').val(); //最小価格を取得
+                let max_price = $('.max_price').val(); //最大価格を取得
+                let min_stock = $('.min_stock').val(); //最小在庫を取得
+                let max_stock = $('.max_stock').val(); //最大在庫を取得
+
+
+
+                // controllerの処理を呼び出す
+                // 結果をjsonで受け取る
+                $.ajax({
+                        type: 'GET',
+                        url: 'search ? keyword=keyword &min_price=min_price &max_price=max_price &min_stock=min_stock &max_stock=max_stock &company=company',
+                        data: {'id':userID,
+                                '_method': 'GET'},
+                        dataType: 'json'
+                        })
+                        .done(function() {
+                            html = `
+                            <tr>
+                                <td>${id}</td>
+                                <td><img src="${img_path}" alt="商品画像" width="100"></td>
+                                <td>${product_name}</td>
+                                <td>${price}</td>
+                                <td>${stock}</td>
+                                <td>${comment}</td>
+                                <td>${company_name}</td>
+                                <td>
+                                    <!-- 選択したカラム行の情報を持って、詳細画面へ -->
+                                    <a href="{{ route('show.detail', ['id' => $product->id]) }}" class="btn btn-info btn-sm mx-1">詳細表示</a>
+                                    <!-- 行削除ボタン -->
+                                    <button data-user_id="{{ $product->id }}" type="submit" class="btn btn-danger btn-sm mx-1">削除</button>
+                                </td>
+                            </tr>
+                                `
+                        $('tbody').append(html); //できあがったテンプレートをビューに追加
+                    })
+                        
+                        .fail(function(){
+                            console.log('データを取得できませんでした');
+                        });
+                        // 元々の処理を無効化
+                        // 最初のリストを全て削除
+                        // HTMLタグを生成
+                        // 受け取った結果を表示させる
+                    });
         });
 
         // 削除機能の実装

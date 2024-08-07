@@ -11,9 +11,10 @@ class SalesController extends Controller
 {
     public function purchase(Request $request)
 {
-
-    $product_id = $request->input('product_id'); // 選択された商品のIDを取得
-    $quantity = $request->input('quantity'); // 購入数を取得
+    // 選択された商品のIDを取得
+    $product_id = $request->input('product_id');
+    // 購入数を取得
+    $quantity = $request->input('quantity');
 
     // 選択された商品情報を取得
     $product = Product::find($product_id);

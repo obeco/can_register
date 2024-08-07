@@ -17,6 +17,8 @@ Route::get('/',function() {
 
 // 一覧画面表示
 Route::get('/can/list', [\App\Http\Controllers\ArticleController::class, 'showList'])->name('show.list');
+// 検索機能（Ajax）
+Route::get('/can/list', [\App\Http\Controllers\ArticleController::class, 'searchList']);
 // 行削除機能（Ajax)
 Route::delete('/can/destroy/{id}', [\App\Http\Controllers\ArticleController::class, 'destroyProduct']);
 // 新規登録画面表示
