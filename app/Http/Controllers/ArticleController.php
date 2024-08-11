@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\Company;
 use Illuminate\Support\Facades\Storage;
-use LDAP\Result;
 
 class ArticleController extends Controller {
 
@@ -114,6 +113,10 @@ class ArticleController extends Controller {
         // productテーブルの情報取得
         $product = Product::query();
 
+        
+        // 絞り込んだデータをproductsに入れる
+        $products = $product->get();
+
         // メーカー名プルダウン用
         $companies = Company::all();
 
@@ -126,11 +129,12 @@ class ArticleController extends Controller {
         // productテーブルの情報取得
         $product = Product::query();
 
-        // ユーザーが入力したキーワードをkeywordに入れる
+        // 検索フォーム（非同期）
+        // keyword＝ユーザーが入力したキーワード
         $keyword = $request->keyword;
         if($keyword){
             $split1 = mb_convert_kana($keyword, 's');
-            // keywordに含まれるスペース全角を半角にする
+            // keywordに含まれるスペース全角を半角に
             $split2 = preg_split('/[\s]+/', $split1);
             // 空白で区切り、配列になる
             foreach($split2 as $keyword){
@@ -177,12 +181,11 @@ class ArticleController extends Controller {
             // 第一引数で基準、第二引数で昇順か降順
             $product->orderBy($sort, $direction);
         }
-        
-        // 絞り込んだデータをproductsに入れる
-        $products = $product->get();
+               // 絞り込んだデータをproductsに入れる
+               $products = $product->get();
 
-        // 取得したデータをjsonで返す
-        return response()->json($products);
+               // 取得したデータをjsonで返す
+               return response()->json($products);
     }
 
 

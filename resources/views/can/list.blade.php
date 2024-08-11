@@ -3,15 +3,7 @@
 @section('content')
 
     <script>
-    // ソートが適用されなかった
-    // $('#fav-table')
-    //     .tablesorter({})
-    //     .tablesorterPager({
-    //         container: $(".pager"),
-    //         size: 5
-    //     });
 
-        // 並べ替え機能
         $(document).ready(function() {
             $('#fav-table').tablesorter({})
             .tablesorterPager({
@@ -33,27 +25,27 @@
     @csrf
         <!-- 商品名検索用の入力欄 -->
         <label class="col-sm-12 col-md-3">
-            <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="商品名検索" class="keyword">
+            <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="商品名検索">
         </label>
 
         <!-- 最小価格の入力欄 -->
         <label class="col-sm-12 col-md-2">
-            <input type="number" name="min_price" class="min_price form-control" placeholder="最小価格" value="{{ request('min_price') }}">
+            <input type="number" name="min_price" class="form-control" placeholder="最小価格" value="{{ request('min_price') }}">
         </label>
 
         <!-- 最大価格の入力欄 -->
         <label class="col-sm-12 col-md-2">
-            <input type="number" name="max_price" class="max_price form-control" placeholder="最大価格" value="{{ request('max_price') }}">
+            <input type="number" name="max_price" class="form-control" placeholder="最大価格" value="{{ request('max_price') }}">
         </label>
 
         <!-- 最小在庫数の入力欄 -->
         <label class="col-sm-12 col-md-2">
-            <input type="number" name="min_stock" class="min_stock form-control" placeholder="最小在庫" value="{{ request('min_stock') }}">
+            <input type="number" name="min_stock" class="form-control" placeholder="最小在庫" value="{{ request('min_stock') }}">
         </label>
 
         <!-- 最大在庫数の入力欄 -->
         <label class="col-sm-12 col-md-2">
-            <input type="number" name="max_stock" class="max_stock form-control" placeholder="最大在庫" value="{{ request('max_stock') }}">
+            <input type="number" name="max_stock" class="form-control" placeholder="最大在庫" value="{{ request('max_stock') }}">
         </label>
 
 
@@ -62,7 +54,7 @@
             <select name="company" data-toggle="select">
                 <option value="">メーカー名</option>
                 @foreach($companies as $company)
-                    <option value="{{ $company->id }}" class="company">
+                    <option value="{{ $company->id }}">
                         {{ $company->company_name }}
                     </option>
                 @endforeach
@@ -130,14 +122,17 @@
     <script type="text/javascript">
         // トークンを送信する記述
         // Laravelでは通信をする際にトークンを送らなければ仕様でエラーが発生する
+        // サーバーに繰り返し実行する前に、パラメータのデフォルトを設定
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
 
+        // 検索機能の実装
         $(function(){
-            $('.search-button').on('click', function(){
+            $('.search-button').on('click', function(e){
+                e.preventDefault();
                 $('tbody').empty(); //もともとある要素を空にする
 
                 let keyword = $('.keyword').val(); //商品名を取得
@@ -147,16 +142,17 @@
                 let min_stock = $('.min_stock').val(); //最小在庫を取得
                 let max_stock = $('.max_stock').val(); //最大在庫を取得
 
-                // controllerの処理を呼び出す
-                // 結果をjsonで受け取る
+                let data = ["keyword","company","min_price","max_price","min_stock","max_stock"]; //これをURLの後ろにつける？
+
                 $.ajax({
                         type: 'GET',
-                        url: /can/list,
-                        data: {products: ["id","product_name","price","stock","img_path","comment"],
-                                '_method': 'GET'},
+                        url: 'search/'+data,
+                        data: { id:id , product_name:product_name , price:price , stock:stock , img_path:img_path , comment:comment,
+                                _method: 'GET'},
                         dataType: 'json'
                         })
-                        .done(function() {
+                        .done(function(products) {
+                            console.log(products);
                             html = `
                             <tr>
                                 <td>${id}</td>
@@ -176,16 +172,12 @@
                                 `
                         $('tbody').append(html); //できあがったテンプレートをビューに追加
                     })
-                        
+                        // 失敗した時
                         .fail(function(){
                             console.log('データを取得できませんでした');
                         });
-                        // 元々の処理を無効化
-                        // 最初のリストを全て削除
-                        // HTMLタグを生成
-                        // 受け取った結果を表示させる
                     });
-        });
+            });
 
         // 削除機能の実装
         $(function(){
