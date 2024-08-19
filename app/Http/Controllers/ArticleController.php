@@ -124,12 +124,11 @@ class ArticleController extends Controller {
     }
 
     // 検索機能
-    public function searchList(Request $request){
+    public function search(Request $request){
 
         // productテーブルの情報取得
         $product = Product::query();
 
-        // 検索フォーム（非同期）
         // keyword＝ユーザーが入力したキーワード
         $keyword = $request->keyword;
         if($keyword){
@@ -182,6 +181,7 @@ class ArticleController extends Controller {
             $product->orderBy($sort, $direction);
         }
                // 絞り込んだデータをproductsに入れる
+               // 検索ワード未選択であれば全てのデータをproductsへ入れる
                $products = $product->get();
 
                // 取得したデータをjsonで返す

@@ -60,7 +60,7 @@
                 @endforeach
             </select>
 
-            <button class="search-button">検索する</button>
+            <button class="search-button" type="button">検索する</button>
         </div>
     </form>
 
@@ -101,8 +101,13 @@
                 </tr>
                 @endforeach
             </tbody>
+            <tbody id="content">
+                <!-- 新たに生成した検索情報を記載 -->
+                 
+            </tbody>
         </table>
 
+    <!-- ページネーション -->
         <div id="pager" class="pager">
             <button type="button" class="first"><<</button>
             <button type="button" class="prev"><</button>
@@ -119,6 +124,7 @@
             <select class="gotoPage" title="Select page number"></select>
         </div>
 
+
     <script type="text/javascript">
         // トークンを送信する記述
         // Laravelでは通信をする際にトークンを送らなければ仕様でエラーが発生する
@@ -133,44 +139,26 @@
         $(function(){
             $('.search-button').on('click', function(e){
                 e.preventDefault();
-                $('tbody').empty(); //もともとある要素を空にする
-
-                let keyword = $('.keyword').val(); //商品名を取得
-                let company = $('.company').val(); //メーカー名を取得
-                let min_price = $('.min_price').val(); //最小価格を取得
-                let max_price = $('.max_price').val(); //最大価格を取得
-                let min_stock = $('.min_stock').val(); //最小在庫を取得
-                let max_stock = $('.max_stock').val(); //最大在庫を取得
-
-                let data = ["keyword","company","min_price","max_price","min_stock","max_stock"]; //これをURLの後ろにつける？
+                $('tbody').empty();
 
                 $.ajax({
                         type: 'GET',
-                        url: 'search/'+data,
-                        data: { id:id , product_name:product_name , price:price , stock:stock , img_path:img_path , comment:comment,
-                                _method: 'GET'},
-                        dataType: 'json'
+                        url: 'list/search',
+                        // このURLで繋がった
+                        dataType: 'json',
+                        data: {products: ['id','img_path','product_name','price','stock','comment','company_name']}
                         })
-                        .done(function(products) {
-                            console.log(products);
-                            html = `
-                            <tr>
-                                <td>${id}</td>
-                                <td><img src="${img_path}" alt="商品画像" width="100"></td>
-                                <td>${product_name}</td>
-                                <td>${price}</td>
-                                <td>${stock}</td>
-                                <td>${comment}</td>
-                                <td>${company_name}</td>
-                                <td>
-                                    <!-- 選択したカラム行の情報を持って、詳細画面へ -->
-                                    <a href="{{ route('show.detail', ['id' => $product->id]) }}" class="btn btn-info btn-sm mx-1">詳細表示</a>
-                                    <!-- 行削除ボタン -->
-                                    <button data-user_id="{{ $product->id }}" type="submit" class="btn btn-danger btn-sm mx-1">削除</button>
-                                </td>
-                            </tr>
-                                `
-                        $('tbody').append(html); //できあがったテンプレートをビューに追加
+                    .done(function(data) {
+                        // htmlタグを作成
+
+                        // オブジェクトを一つずつ取り出す
+                        $.each(data,
+                            function(index, val) {
+                                console.log('ID：' + val.id + '商品画像：' + val.img_path + '商品名：' + val.product_name + ' 価格：' + val.price + ' 在庫：' + val.stock + ' コメント：' + val.comment + ' メーカー名：' + val.company_id);
+                            }
+                        );
+                        console.log(data);
+                    
                     })
                         // 失敗した時
                         .fail(function(){
