@@ -128,8 +128,8 @@ class ArticleController extends Controller {
 
         // productテーブルの情報取得
         $product = Product::query();
+        // テーブル合体し、companiesテーブルのcompany_nameを取得
         $product->select('products.*', 'companies.company_name')->join('companies', 'products.company_id', '=', 'companies.id');
-        // テーブル合体した
 
         // keyword＝ユーザーが入力したキーワード
         $keyword = $request->keyword;

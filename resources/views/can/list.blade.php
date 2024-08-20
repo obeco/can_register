@@ -141,6 +141,7 @@
                 e.preventDefault();
                 $('.dataList').empty();
 
+                // serializeを使用し、formタグ内の入力情報を一括で取得、渡す
                 let keywordValue = $("#keyword").serialize();
 
                 $.ajax({
@@ -148,28 +149,33 @@
                         url: 'list/search',
                         dataType: 'json',
 
-                        // data: {products: [id","img_path","product_name","price","stock","comment","company_name"]}
-
                         // 検索フォームで入力した値をControllerへ渡す
                         data: keywordValue
                         })
                     .done(function(data) {
-                        // htmlタグを作成
-
                         console.log(data);
-                        // オブジェクトを一つずつ取り出す
+
+                        // オブジェクトから絞り込みデータを一つずつ取り出す
                         $.each(data,
                             function(index, val) {
                                 console.log('ID：' + val.id + '商品画像：' + val.img_path + '商品名：' + val.product_name + ' 価格：' + val.price + ' 在庫：' + val.stock + ' コメント：' + val.comment + ' メーカー名：' + val.company_id);
 
-                                $('.dataList').html
+                                // $('.dataList').html
+                                // この記述では、1行ずつ上書きしていってしまっているため最後の1つしか表示されない
+
+                                // 検索結果をtbody内に追加する
+                                $('.dataList').append
                                 ('<tr><td>' + val.id + '</td>'+
-                                '<td>' + '<img src="http://localhost:8888/public/'+ val.img_path +'">' + '</td>'+
+                                '<td>' + '<img src="/public/'+ val.img_path +'" alt="商品画像" width="100">' + '</td>'+
                                 '<td>' + val.product_name + '</td>'+
                                 '<td>' + val.price + '</td>'+
                                 '<td>' + val.stock + '</td>'+
                                 '<td>' + val.comment + '</td>'+
-                                '<td>' + val.company_name + '</td></tr>');
+                                '<td>' + val.company_name + '</td>'+
+                                '<td>' +
+                                    '<a href="/public/can/detail/'+ val.id + '" class="btn btn-info btn-sm mx-1">詳細表示</a>'+
+                                    '<button data-user_id="'+ val.id + '" type="submit" class="btn btn-danger btn-sm mx-1">削除</button>'+
+                                '</td></tr>');
                             }
                         );
                     
