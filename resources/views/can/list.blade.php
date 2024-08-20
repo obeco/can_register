@@ -21,7 +21,7 @@
     <a href="{{ route('show.regist') }}" class="btn btn-primary mb-3">商品新規登録</a>
    
     <!-- キーワード検索フォーム -->
-    <form action="{{ route('show.list') }}" method="GET" class="mb-3">
+    <form action="{{ route('show.list') }}" method="GET" class="mb-3" id="keyword">
     @csrf
         <!-- 商品名検索用の入力欄 -->
         <label class="col-sm-12 col-md-3">
@@ -82,9 +82,9 @@
                     <th>メーカー名</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="dataList">
                 @foreach($products as $product)
-                <tr>
+                <tr class="">
                     <td>{{ $product->id }}</td>
                     <td><img src="{{ asset($product->img_path) }}" alt="商品画像" width="100"></td>
                     <td>{{ $product->product_name }}</td>
@@ -101,7 +101,7 @@
                 </tr>
                 @endforeach
             </tbody>
-            <tbody id="content">
+            <tbody id="newDataList">
                 <!-- 新たに生成した検索情報を記載 -->
                  
             </tbody>
@@ -139,25 +139,39 @@
         $(function(){
             $('.search-button').on('click', function(e){
                 e.preventDefault();
-                $('tbody').empty();
+                $('.dataList').empty();
+
+                let keywordValue = $("#keyword").serialize();
 
                 $.ajax({
                         type: 'GET',
                         url: 'list/search',
-                        // このURLで繋がった
                         dataType: 'json',
-                        data: {products: ['id','img_path','product_name','price','stock','comment','company_name']}
+
+                        // data: {products: [id","img_path","product_name","price","stock","comment","company_name"]}
+
+                        // 検索フォームで入力した値をControllerへ渡す
+                        data: keywordValue
                         })
                     .done(function(data) {
                         // htmlタグを作成
 
+                        console.log(data);
                         // オブジェクトを一つずつ取り出す
                         $.each(data,
                             function(index, val) {
                                 console.log('ID：' + val.id + '商品画像：' + val.img_path + '商品名：' + val.product_name + ' 価格：' + val.price + ' 在庫：' + val.stock + ' コメント：' + val.comment + ' メーカー名：' + val.company_id);
+
+                                $('.dataList').html
+                                ('<tr><td>' + val.id + '</td>'+
+                                '<td>' + '<img src="http://localhost:8888/public/'+ val.img_path +'">' + '</td>'+
+                                '<td>' + val.product_name + '</td>'+
+                                '<td>' + val.price + '</td>'+
+                                '<td>' + val.stock + '</td>'+
+                                '<td>' + val.comment + '</td>'+
+                                '<td>' + val.company_name + '</td></tr>');
                             }
                         );
-                        console.log(data);
                     
                     })
                         // 失敗した時
