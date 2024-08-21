@@ -189,7 +189,7 @@
 
         // 削除機能の実装
         $(function(){
-            $('.btn-danger').on('click', function(){
+            $(document).on('click','.btn-danger', function(){
                 var deleteConfirm = confirm('本当に削除しますか？');
 
                 if(deleteConfirm == true){
