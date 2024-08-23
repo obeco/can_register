@@ -2,21 +2,7 @@
 
 @section('content')
 
-    <script>
-
-        $(document).ready(function() {
-            $('#fav-table').tablesorter({})
-            .tablesorterPager({
-                container: $(".pager"),
-                // 表示したい行数
-                size: 5
-            });
-        });
-    </script>
-    
-
    <h1>商品一覧画面</h1>
-
     <!-- 新規登録画面へ -->
     <a href="{{ route('show.regist') }}" class="btn btn-primary mb-3">商品新規登録</a>
    
@@ -101,10 +87,6 @@
                 </tr>
                 @endforeach
             </tbody>
-            <tbody id="newDataList">
-                <!-- 新たに生成した検索情報を記載 -->
-                 
-            </tbody>
         </table>
 
     <!-- ページネーション -->
@@ -126,8 +108,7 @@
 
 
     <script type="text/javascript">
-        // トークンを送信する記述
-        // Laravelでは通信をする際にトークンを送らなければ仕様でエラーが発生する
+        // トークンを送信する記述（Laravelでは通信をする際にトークンを送らなければエラー発生する仕様）
         // サーバーに繰り返し実行する前に、パラメータのデフォルトを設定
         $.ajaxSetup({
             headers: {
@@ -135,7 +116,21 @@
             }
         });
 
-        // 検索機能の実装
+        // ソート機能（定義）
+        function sortTable(){
+            $(document).ready(function() {
+                $('#fav-table').tablesorter({})
+                .tablesorterPager({
+                    container: $(".pager"),
+                    // 表示したい行数
+                    size: 5
+                });
+            });
+        }
+        // ソート実行（ページ表示時）
+        sortTable();
+
+        // 検索機能
         $(function(){
             $('.search-button').on('click', function(e){
                 e.preventDefault();
@@ -148,20 +143,16 @@
                         type: 'GET',
                         url: 'list/search',
                         dataType: 'json',
-
-                        // 検索フォームで入力した値をControllerへ渡す
-                        data: keywordValue
+                        data: keywordValue // 検索フォームの入力値をControllerへ渡す
                         })
                     .done(function(data) {
-                        console.log(data);
 
                         // オブジェクトから絞り込みデータを一つずつ取り出す
                         $.each(data,
                             function(index, val) {
-                                console.log('ID：' + val.id + '商品画像：' + val.img_path + '商品名：' + val.product_name + ' 価格：' + val.price + ' 在庫：' + val.stock + ' コメント：' + val.comment + ' メーカー名：' + val.company_id);
 
-                                // $('.dataList').html
-                                // この記述では、1行ずつ上書きしていってしまっているため最後の1つしか表示されない
+                                // 成功したとき
+                                console.log('データ取得ができました');
 
                                 // 検索結果をtbody内に追加する
                                 $('.dataList').append
@@ -176,9 +167,14 @@
                                     '<a href="/public/can/detail/'+ val.id + '" class="btn btn-info btn-sm mx-1">詳細表示</a>'+
                                     '<button data-user_id="'+ val.id + '" type="submit" class="btn btn-danger btn-sm mx-1">削除</button>'+
                                 '</td></tr>');
-                            }
-                        );
-                    
+
+                            });
+
+                        // ソート実行（絞り込み検索後）
+                        $(function(){
+                            $("#fav-table").trigger("update");
+                                sortTable();
+                        });
                     })
                         // 失敗した時
                         .fail(function(){
@@ -186,6 +182,8 @@
                         });
                     });
             });
+
+
 
         // 削除機能の実装
         $(function(){

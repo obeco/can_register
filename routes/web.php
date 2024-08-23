@@ -25,11 +25,11 @@ Route::delete('/can/destroy/{id}', [\App\Http\Controllers\ArticleController::cla
 Route::get('/can/regist', [\App\Http\Controllers\ArticleController::class, 'showRegist'])->name('show.regist');
 // 詳細画面表示
 Route::get('/can/detail/{id}', [\App\Http\Controllers\ArticleController::class, 'showDetail'])->name('show.detail');
-// 一覧画面　→ 編集画面表示
+// 一覧画面　→　編集画面表示
 Route::get('/can/{id}/edit', [\App\Http\Controllers\ArticleController::class, 'showEdit'])->name('show.edit');
 // 登録する
 Route::post('/can/regist', [\App\Http\Controllers\ArticleController::class, 'storeProduct'])->name('store.product');
-// 編集　→　更新
+// 編集画面　→　更新画面表示
 Route::post('/can/{id}/edit', [\App\Http\Controllers\ArticleController::class, 'updateProduct'])->name('update.product');
 
 ?>

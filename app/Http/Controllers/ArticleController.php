@@ -134,19 +134,15 @@ class ArticleController extends Controller {
         // keyword＝ユーザーが入力したキーワード
         $keyword = $request->keyword;
         if($keyword){
-            $split1 = mb_convert_kana($keyword, 's');
             // keywordに含まれるスペース全角を半角に
-            $split2 = preg_split('/[\s]+/', $split1);
+            $split1 = mb_convert_kana($keyword, 's');
             // 空白で区切り、配列になる
-            foreach($split2 as $keyword){
+            $split2 = preg_split('/[\s]+/', $split1);
             // 上記の配列をforeachで回す
+            foreach($split2 as $keyword){
+            // キーワードと当てはまるデータを取得
             $product->where('product_name','LIKE','%'.$keyword. '%')->get();
         }
-        }
-
-        // 商品名の検索キーワードがある場合、そのキーワードを含む商品を表示
-        if($keyword = $request->keyword){
-            $product->where('product_name', 'LIKE', "%{$keyword}%");
         }
         
 
@@ -217,10 +213,8 @@ class ArticleController extends Controller {
 
         DB::beginTransaction();
         try {    
-            \Log::info($id);
             $product = Product::findOrFail($id);
             $product->delete();
-            
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
